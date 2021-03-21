@@ -25,10 +25,10 @@ class prepare_data():
         try:
             data = self.full_data[key][start:start+step+horizon+1]
         except IndexError:
-            return False
-        data_categorical = sum(data[0:step])
+            return 'Finished'
         data = data[step:]
         data = log(array(data[:-1])/array(data[1:]))[::-1]
+        data_categorical = sum(data[0:step])
         base_categorical = std(data)
         category = self._categorize(data_categorical, base_categorical)
         data = self._restructure(data, width)
@@ -44,10 +44,10 @@ class prepare_data():
             position -= 1
         elif data < -step and data >= step*-2:
             position += 1
-        elif data > step*2 and <=step*3:
-            position - =2
-        elif data < step*-2 and >=step*-3:
-            position + =2
+        elif data > step*2 and data <= step*3:
+            position -= 2
+        elif data < step*-2 and data >= step*-3:
+            position += 2
         elif data > step*3:
             position -= 3
         elif data < step*-3:
@@ -67,8 +67,53 @@ class prepare_data():
             last = value
         return board
 
-    def use_hacks(self, key, start=0, step=5, horizon=42, width=200):
-        pass
+    def use_hacks(self, key, step=5, horizon=42, width=200):
+        '''
+        returns all the values related to info available for the asset
+        '''
+        test_data = []
+        categorical = []
+        stds = []
+        epoch = 0
+        while True:
+            start = epoch*(step+horizon+1)
+            epoch += 1
+            recieved = self.make_graph(key, start=start, step=step,
+                                       horizon=horizon, width=width)
+            if recieved == 'Finished':
+                break
+            elif not recieved:
+                continue
+            test_data.append(recieved[0])
+            categorical.append(recieved[1])
+            stds.append(recieved[2])
+        return (test_data, categorical, stds)
 
-    def mass_hacking(self, key, start=0, step=5, horizon=42, width=200):
-        pass
+    def mass_hacking(self, tick, _from=0, _to=None, step=5, horizon=42, width=200):
+        '''
+        We use different assets simultaniously, to make the hacking ethical!!!
+        tick, int, should change in every use to fetch new data;
+
+        exemple:
+            for tick in range(100):
+                data = self.mass_hacking(tick)
+                if not data:
+                    break
+                model.train(data=data[0],evaluate=data[1])
+
+        _from and _to can be used to spec range from the list if the set is extremely big;
+        else is make_graph;
+        '''
+        test_data = []
+        categorical = []
+        stds = []
+        for key in self.keys[_from:_to]:
+            start = tick*(step+horizon+1)
+            result = self.make_graph(key, start=start, step=step,
+                                     horizon=horizon, width=width)
+            if not result:
+                continue
+            test_data.append(result[0])
+            categorical.append(result[1])
+            stds.append(result[2])
+        return (test_data, categorical, stds)
