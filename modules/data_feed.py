@@ -12,7 +12,7 @@ class prepare_data():
     def __init__(self, database, table):
         self.db = DATABASE(database, table)
         self.full_data = export(self.db)
-        self.keys = [key for key in self.full_data.keys()][1:]
+        self.keys = list(self.full_data.keys())[1:]
 
     def make_graph(self, key, start=0, step=5, horizon=42, width=200):
         """
