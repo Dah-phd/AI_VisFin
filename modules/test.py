@@ -1,6 +1,5 @@
+from numpy.lib.arraysetops import isin
 from tensorflow.python.keras.backend import exp
-from .ctrl_sql3 import DATABASE
-from .output import export
 from .data_feed import PrepareData
 from tensorflow import keras, expand_dims
 import numpy as np
@@ -12,7 +11,7 @@ class _SubPrepareData(PrepareData):
         self.full_data = full_data
         self.keys = list(self.full_data.columns)[1:]
 
-    def make_graph(self, key, start=0, step=5, horizon=42, width=200):
+    def make_graph(self, key, start=0, step=5, horizon=84, width=200):
         data = self.full_data[key][start:start+step+horizon+1]
         data = np.log(np.array(data[:-1])/np.array(data[1:]))[::-1]
         data_categorical = sum(data[0:step])
@@ -26,12 +25,19 @@ class _SubPrepareData(PrepareData):
 
 
 class Tester:
-    def __init__(self, vis_fin_model: str, data_csv: str, days_to_test: int = 5) -> None:
+    def __init__(self, vis_fin_model: str,
+                 data_csv: str,
+                 days_to_test: int = 5,
+                 skip: int = 0,
+                 index_col: str or None = None) -> None:
         self.model = keras.models.load_model(vis_fin_model)
-        self.test_data = pd.read_csv(data_csv)
+        self.test_data = pd.read_csv(data_csv, index_col=index_col)
+        self.skip = skip
         # for five days
         self.graph_makers = [_SubPrepareData(
             self.test_data.iloc[i:]) for i in range(days_to_test)]
+        for gm in self.graph_makers:
+            gm.clean_db()
         self.basic_stats = False
         self.predictions = []
         self.data = []
@@ -46,7 +52,7 @@ class Tester:
             expected = []
             st_devs = []
             for key in graph_maker.keys:
-                grapth_tup = graph_maker.make_graph(key)
+                grapth_tup = graph_maker.make_graph(key, start=self.skip)
                 if grapth_tup:
                     graph.append(grapth_tup[0])
                     expected.append(grapth_tup[1])
@@ -82,6 +88,7 @@ class Tester:
                 'Exact match rate': match/self.predictions[i_gm].shape[0],
                 'Gain/Loss match rate': (match+direction_match)/self.predictions[i_gm].shape[0],
                 'Random match rate': self.coin_test[2],
+                'Random direction match rate': self.coin_test[3]/self.coin_test[1],
                 'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})', }
 
     def overview(self):
@@ -105,6 +112,7 @@ class Tester:
         rand_ls_1 = np.random.randint(0, 8, n)
         rand_ls_2 = np.random.randint(0, 8, n)
         match = 0
+        direction = 0
         for r1, r2 in zip(rand_ls_1, rand_ls_2):
             if r1 == r2:
                 match += 1
@@ -112,4 +120,8 @@ class Tester:
                 match += 1
             elif r2 == 3 and r1 == 4:
                 match += 1
-        return (match, n, match/n)
+            if r1 < 3 and r2 < 3:
+                direction += 1
+            elif r1 > 4 and r2 > 4:
+                direction += 1
+        return (match, n, match/n, direction, direction/n)

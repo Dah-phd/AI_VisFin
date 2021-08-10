@@ -1,18 +1,13 @@
-if __name__ == '__main__':
-    from ctrl_sql3 import DATABASE
-    from output import export
-else:
-    from .ctrl_sql3 import DATABASE
-    from .output import export
-
 from numpy import array, std, log
+import pandas as pd
 
 
 class PrepareData():
-    def __init__(self, database, table):
-        self.db = DATABASE(database, table)
-        self.full_data = export(self.db)
-        self.keys = list(self.full_data.keys())[1:]
+    def __init__(self, database: str, date_col: str, skip: int or None = None):
+        self.full_data = pd.read_csv(database, index_col=date_col)
+        self.keys = self.full_data.columns
+        if not isinstance(skip, type(None)):
+            self.full_data = self.full_data[skip:]
 
     def make_graph(self, key, start=0, step=5, horizon=42, width=200):
         """
@@ -34,7 +29,13 @@ class PrepareData():
         data = self._restructure(data, width)
         if not data:
             return False
-        return (data, category, base_categorical)
+        return (array(data), category, base_categorical)
+
+    def clean_db(self):
+        for col in self.keys:
+            if self.full_data[col].isna().any():
+                self.full_data.drop(columns=col, inplace=True)
+        self.keys = self.full_data.columns
 
     def test_data_graph(self, key, start=0, step=5, horizon=42, width=200):
         """
@@ -133,7 +134,7 @@ class PrepareData():
             start = tick*(step+horizon+1)
             result = self.make_graph(key, start=start, step=step,
                                      horizon=horizon, width=width)
-            if not result:
+            if not result or result[0].shape != (201, 85):
                 continue
             test_data.append(result[0])
             categorical.append(result[1])
