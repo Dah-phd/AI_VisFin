@@ -8,7 +8,6 @@ class PrepareData():
         self.keys = self.full_data.columns
         if not isinstance(skip, type(None)):
             self.full_data = self.full_data[skip:]
-        print(self.full_data)
 
     def make_graph(self, key, start=0, step=5, horizon=42, width=200):
         """
@@ -135,7 +134,7 @@ class PrepareData():
             start = tick*(step+horizon+1)
             result = self.make_graph(key, start=start, step=step,
                                      horizon=horizon, width=width)
-            if not result or result[0].shape != (201, 85):
+            if not result or result[0].shape != (width + 1, horizon+1):
                 continue
             test_data.append(result[0])
             categorical.append(result[1])
