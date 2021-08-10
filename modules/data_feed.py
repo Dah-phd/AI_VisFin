@@ -8,6 +8,7 @@ class PrepareData():
         self.keys = self.full_data.columns
         if not isinstance(skip, type(None)):
             self.full_data = self.full_data[skip:]
+        print(self.full_data)
 
     def make_graph(self, key, start=0, step=5, horizon=42, width=200):
         """

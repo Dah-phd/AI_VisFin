@@ -12,7 +12,7 @@ TICKS = int(argv[2])
 def main():
     print(f'Training {MODEL_NAME}!')
     for tick in range(TICKS):
-        data = DATABASE.mass_hacking(tick=tick, horizon=84)
+        data = DATABASE.mass_hacking(tick=tick, horizon=42)
         tr_data = expand_dims(np.array(data[0]), axis=-1)
         tr_key = np.array(data[1])
         if tr_data.shape[0] > 0:

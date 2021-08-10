@@ -11,7 +11,7 @@ class _SubPrepareData(PrepareData):
         self.full_data = full_data
         self.keys = list(self.full_data.columns)[1:]
 
-    def make_graph(self, key, start=0, step=5, horizon=84, width=200):
+    def make_graph(self, key, start=0, step=5, horizon=42, width=200):
         data = self.full_data[key][start:start+step+horizon+1]
         data = np.log(np.array(data[:-1])/np.array(data[1:]))[::-1]
         data_categorical = sum(data[0:step])
