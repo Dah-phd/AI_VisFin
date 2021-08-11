@@ -50,8 +50,8 @@ class PrepareData():
         except IndexError:
             return 'Finished'
         data = log(array(data[:-1])/array(data[1:]))[::-1]
-        data_categorical = sum(data[0:step])
-        data = data[step:]
+        data_categorical = sum(data[-step:])
+        data = data[:-step]
         base_categorical = std(data)
         category = self._categorize(data_categorical, base_categorical)
         data = self._restructure(data, width)
