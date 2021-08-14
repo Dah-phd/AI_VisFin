@@ -1,0 +1,115 @@
+
+results_for_daily__us__nasdaq_stocks_5_new_days[
+  {
+    "Total tests": 2386,
+    "Exact match": 561,
+    "Matched by second highest": 403,
+    "Match gain or loss": 530,
+    "Exact match rate": 0.23512154233025984,
+    "Gain/Loss match rate": 0.4572506286672255,
+    "Random match rate": 0.15,
+    "Random direction match rate": 0.2745,
+    "Random match test params": "Matches (1500)/N(10000)"
+  },
+  {
+    "Total tests": 2401,
+    "Exact match": 588,
+    "Matched by second highest": 401,
+    "Match gain or loss": 573,
+    "Exact match rate": 0.24489795918367346,
+    "Gain/Loss match rate": 0.4835485214493961,
+    "Random match rate": 0.15,
+    "Random direction match rate": 0.2745,
+    "Random match test params": "Matches (1500)/N(10000)"
+  },
+  {
+    "Total tests": 2412,
+    "Exact match": 479,
+    "Matched by second highest": 419,
+    "Match gain or loss": 504,
+    "Exact match rate": 0.19859038142620233,
+    "Gain/Loss match rate": 0.40754560530679934,
+    "Random match rate": 0.15,
+    "Random direction match rate": 0.2745,
+    "Random match test params": "Matches (1500)/N(10000)"
+  },
+  {
+    "Total tests": 2409,
+    "Exact match": 548,
+    "Matched by second highest": 411,
+    "Match gain or loss": 516,
+    "Exact match rate": 0.22748028227480283,
+    "Gain/Loss match rate": 0.44167704441677047,
+    "Random match rate": 0.15,
+    "Random direction match rate": 0.2745,
+    "Random match test params": "Matches (1500)/N(10000)"
+  },
+  {
+    "Total tests": 2411,
+    "Exact match": 704,
+    "Matched by second highest": 460,
+    "Match gain or loss": 555,
+    "Exact match rate": 0.29199502281211115,
+    "Gain/Loss match rate": 0.5221899626710909,
+    "Random match rate": 0.15,
+    "Random direction match rate": 0.2745,
+    "Random match test params": "Matches (1500)/N(10000)"
+  }
+]
+results_for_daily__us__nyse_stocks_5_new_days[
+  {
+    "Total tests": 2630,
+    "Exact match": 560,
+    "Matched by second highest": 440,
+    "Match gain or loss": 572,
+    "Exact match rate": 0.21292775665399238,
+    "Gain/Loss match rate": 0.43041825095057035,
+    "Random match rate": 0.1564,
+    "Random direction match rate": 0.2869,
+    "Random match test params": "Matches (1564)/N(10000)"
+  },
+  {
+    "Total tests": 2630,
+    "Exact match": 639,
+    "Matched by second highest": 473,
+    "Match gain or loss": 515,
+    "Exact match rate": 0.2429657794676806,
+    "Gain/Loss match rate": 0.4387832699619772,
+    "Random match rate": 0.1564,
+    "Random direction match rate": 0.2869,
+    "Random match test params": "Matches (1564)/N(10000)"
+  },
+  {
+    "Total tests": 2632,
+    "Exact match": 651,
+    "Matched by second highest": 501,
+    "Match gain or loss": 529,
+    "Exact match rate": 0.2473404255319149,
+    "Gain/Loss match rate": 0.44832826747720367,
+    "Random match rate": 0.1564,
+    "Random direction match rate": 0.2869,
+    "Random match test params": "Matches (1564)/N(10000)"
+  },
+  {
+    "Total tests": 2635,
+    "Exact match": 647,
+    "Matched by second highest": 503,
+    "Match gain or loss": 514,
+    "Exact match rate": 0.24554079696394687,
+    "Gain/Loss match rate": 0.44060721062618596,
+    "Random match rate": 0.1564,
+    "Random direction match rate": 0.2869,
+    "Random match test params": "Matches (1564)/N(10000)"
+  },
+  {
+    "Total tests": 2636,
+    "Exact match": 777,
+    "Matched by second highest": 549,
+    "Match gain or loss": 578,
+    "Exact match rate": 0.2947647951441578,
+    "Gain/Loss match rate": 0.5140364188163885,
+    "Random match rate": 0.1564,
+    "Random direction match rate": 0.2869,
+    "Random match test params": "Matches (1564)/N(10000)"
+  }
+]
