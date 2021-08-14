@@ -19,7 +19,7 @@ def main():
             MODEL.fit(
                 tr_data,
                 tr_key,
-                epochs=5,
+                epochs=10,
                 verbose=1,
                 shuffle=True)
     MODEL.save(MODEL_NAME)

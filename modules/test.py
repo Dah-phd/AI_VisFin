@@ -1,28 +1,9 @@
-from numpy.lib.arraysetops import isin
 from tensorflow.python.keras.backend import exp
 from .data_feed import PrepareData
 from tensorflow import keras, expand_dims
 import numpy as np
 import pandas as pd
 import json
-
-
-class _SubPrepareData(PrepareData):
-    def __init__(self, full_data: pd.DataFrame):
-        self.full_data = full_data
-        self.keys = list(self.full_data.columns)[1:]
-
-    def make_graph(self, key, start=0, step=5, horizon=42, width=200):
-        data = self.full_data[key][start:start+step+horizon+1]
-        data = np.log(np.array(data[:-1])/np.array(data[1:]))[::-1]
-        data_categorical = sum(data[0:step])
-        data = data[step:]
-        base_categorical = np.std(data)
-        category = self._categorize(data_categorical, base_categorical)
-        data = self._restructure(data, width)
-        if not data:
-            return False
-        return (data, category, data_categorical, base_categorical)
 
 
 class Tester:
@@ -33,37 +14,33 @@ class Tester:
                  index_col: str or None = None) -> None:
         self.model = keras.models.load_model(vis_fin_model)
         self.test_data = pd.read_csv(data_csv, index_col=index_col)
-        self.skip = skip
+        self.days_to_test = days_to_test
         self.file_for_predictions = 'results_for_' + \
             data_csv[:-4]+f'_{5-skip}_new_days.csv'
         # for five days
-        self.graph_makers = [_SubPrepareData(
-            self.test_data.iloc[i:]) for i in range(days_to_test)]
-        for gm in self.graph_makers:
-            gm.clean_db()
+        self.graph_maker = PrepareData(
+            database=data_csv, date_col=index_col, skip=skip)
+        self.graph_maker.clean_db()
+        # results
         self.basic_stats = False
         self.predictions = []
-        self.data = []
         self.graphs = []
         self.expected = []
         self.st_devs = []
 
     def test(self):
-        for graph_maker in self.graph_makers:
-            data = []
+        for i in range(self.days_to_test):
             graph = []
             expected = []
             st_devs = []
-            for key in graph_maker.keys:
-                grapth_tup = graph_maker.make_graph(key, start=self.skip)
-                if grapth_tup:
+            for key in self.graph_maker.keys:
+                grapth_tup = self.graph_maker.make_graph(key, start=i)
+                if grapth_tup[0].shape == (201, 43):
                     graph.append(grapth_tup[0])
                     expected.append(grapth_tup[1])
-                    data.append(grapth_tup[2])
-                    st_devs.append(grapth_tup[3])
+                    st_devs.append(grapth_tup[2])
             self.predictions.append(self.model.predict(
                 expand_dims(graph, axis=-1)))
-            self.data.append(data)
             self.expected.append(expected)
             self.st_devs.append(st_devs)
         pd.DataFrame({'Expected': self.expected, 'Results': self.predictions}).to_csv(
@@ -108,8 +85,8 @@ class Tester:
             return self.basic_stats
         else:
             self.coin_test = self._coin_flip_equivalent()
-            self.basic_stats = [self._test_vals(i)
-                                for i in range(len(self.graph_makers))]
+            self.basic_stats = [self._test_vals(
+                i) for i in range(self.days_to_test)]
             self.store_results()
             return self.basic_stats
 
@@ -119,7 +96,7 @@ class Tester:
         ls[ls_max] = 0
         return ls.index(max(ls))
 
-    @staticmethod
+    @ staticmethod
     def _coin_flip_equivalent(n: int = 10000):
         rand_ls_1 = np.random.randint(0, 8, n)
         rand_ls_2 = np.random.randint(0, 8, n)
