@@ -4,6 +4,7 @@ from .data_feed import PrepareData
 from tensorflow import keras, expand_dims
 import numpy as np
 import pandas as pd
+import json
 
 
 class _SubPrepareData(PrepareData):
@@ -33,6 +34,8 @@ class Tester:
         self.model = keras.models.load_model(vis_fin_model)
         self.test_data = pd.read_csv(data_csv, index_col=index_col)
         self.skip = skip
+        self.file_for_predictions = 'results_for_' + \
+            data_csv[:-4]+f'_{5-skip}_new_days.csv'
         # for five days
         self.graph_makers = [_SubPrepareData(
             self.test_data.iloc[i:]) for i in range(days_to_test)]
@@ -63,6 +66,8 @@ class Tester:
             self.data.append(data)
             self.expected.append(expected)
             self.st_devs.append(st_devs)
+        pd.DataFrame({'Expected': self.expected, 'Results': self.predictions}).to_csv(
+            self.file_for_predictions, index=False)
 
     def _test_vals(self, i_gm):
         match = 0
@@ -91,6 +96,13 @@ class Tester:
                 'Random direction match rate': self.coin_test[3]/self.coin_test[1],
                 'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})', }
 
+    def store_results(self):
+        file_name = 'results.json'
+        with open(file_name, 'a+') as data_saver:
+            data_saver.write('\n')
+            data_saver.write(self.file_for_predictions[:-4])
+            data_saver.write(json.dumps(self.basic_stats, indent=2))
+
     def overview(self):
         if self.basic_stats:
             return self.basic_stats
@@ -98,7 +110,7 @@ class Tester:
             self.coin_test = self._coin_flip_equivalent()
             self.basic_stats = [self._test_vals(i)
                                 for i in range(len(self.graph_makers))]
-
+            self.store_results()
             return self.basic_stats
 
     @ staticmethod

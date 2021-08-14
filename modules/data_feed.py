@@ -21,15 +21,12 @@ class PrepareData():
             data = self.full_data[key][start:start+step+horizon+1]
         except IndexError:
             return 'Finished'
-        data = data[step:]
         data = log(array(data[:-1])/array(data[1:]))[::-1]
-        data_categorical = sum(data[0:step])
-        base_categorical = std(data)
-        category = self._categorize(data_categorical, base_categorical)
-        data = self._restructure(data, width)
-        if not data:
+        base_categorical = std(data[:-step])
+        category = self._categorize(sum(data[-step:]), base_categorical)
+        if data.shape == (0,):
             return False
-        return (array(data), category, base_categorical)
+        return (array(self._restructure(data[:-step], width)), category, base_categorical)
 
     def clean_db(self):
         for col in self.keys:
