@@ -12,17 +12,22 @@ class DataSet():
         horizon: int = 42,
         graph_width: int = 200,
         skip: int or None = 5,  # rows kept for pure testing
+        load_pure_test: bool = False,
         **kwargs
     ) -> None:
-        self.data_base: pd.DataFrame = pd.read_csv(db, **kwargs)
-        self.data_base: pd.DataFrame = self.data_base.iloc[skip:]
+        if not load_pure_test:
+            self.data_base: pd.DataFrame = pd.read_csv(db, **kwargs)\
+                .iloc[skip:]
+        else:
+            self.data_base: pd.DataFrame = pd.read_csv(db, **kwargs)\
+                .iloc[:(forecast_len+horizon+1)]
         self.data_base[date_col] = pd.to_datetime(self.data_base[date_col])
         self.data_base.sort_values(date_col)
         self.data_base.drop(columns=['date'], inplace=True)
         self._forecast_len = forecast_len
         self._horizon = horizon
         self._graph_width = graph_width
-        self.build_data()
+        self.build_data(load_pure_test)
 
     @property
     def horizon(self):
@@ -39,10 +44,10 @@ class DataSet():
     def build_data(self):
         data_set = []
         data_keys = []
-        total_len = len(self.data_base.columns)
+        # total_len = len(self.data_base.columns)
         for n_eq, col in enumerate(self.data_base):
             serries_to_array = np.array(self.data_base[col])
-            print(f'Processing equity {n_eq} for {total_len} in total!')
+            # print(f'Processing equity {n_eq} for {total_len} in total!')
             for i in range(len(serries_to_array)):
                 start_position = i*self.forecast_len
                 end_position = start_position+self.forecast_len+self.horizon+1
@@ -53,12 +58,9 @@ class DataSet():
                         start_position:end_position
                     ]
                 )
-                print(graph_category_mix[0].shape)
                 data_set.append(graph_category_mix[0])
                 data_keys.append(graph_category_mix[1])
-            if n_eq == 2:
-                break
-            print('Finished!')
+            # print('Finished!')
         self.data_set = expand_dims(np.array(data_set), axis=-1)
         self.data_keys = np.array(data_keys)
 
