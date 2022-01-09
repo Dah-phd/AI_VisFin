@@ -1,3 +1,4 @@
+from re import T
 import pandas as pd
 import numpy as np
 from tensorflow import expand_dims
@@ -27,7 +28,7 @@ class DataSet():
         self._forecast_len = forecast_len
         self._horizon = horizon
         self._graph_width = graph_width
-        self.build_data(load_pure_test)
+        self.build_data()
 
     @property
     def horizon(self):
@@ -45,6 +46,7 @@ class DataSet():
         data_set = []
         data_keys = []
         # total_len = len(self.data_base.columns)
+        removed = 0
         for n_eq, col in enumerate(self.data_base):
             serries_to_array = np.array(self.data_base[col])
             # print(f'Processing equity {n_eq} for {total_len} in total!')
@@ -54,14 +56,17 @@ class DataSet():
                 if end_position >= len(serries_to_array):
                     break
                 graph_category_mix = self.make_graph(
-                    serries_to_array[
-                        start_position:end_position
-                    ]
+                    serries_to_array[start_position:end_position]
                 )
+                if graph_category_mix[0].shape != (201, 43):
+                    removed += 1
+                    continue
                 data_set.append(graph_category_mix[0])
                 data_keys.append(graph_category_mix[1])
             # print('Finished!')
-        self.data_set = expand_dims(np.array(data_set), axis=-1)
+        print(removed)
+        data_set = np.array(data_set)
+        self.data_set = expand_dims(data_set, axis=-1)
         self.data_keys = np.array(data_keys)
 
     def make_graph(self, data: np.array):

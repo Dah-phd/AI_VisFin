@@ -4,7 +4,6 @@ from sys import argv
 from modules.data_feed import DataSet
 MODEL_NAME = argv[1]
 MODEL = keras.models.load_model(MODEL_NAME)
-TICKS = int(argv[2])
 
 
 def main():
