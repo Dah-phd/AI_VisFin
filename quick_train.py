@@ -12,6 +12,7 @@ def main():
     MODEL.fit(
         data.data_set,
         data.data_keys,
+        batch_size=1000,
         epochs=10,
         verbose=1,
         shuffle=True)
