@@ -8,27 +8,27 @@ class DataSet():
     def __init__(
         self,
         db: str,
+        auto_fill_set: bool = True,
         date_col: str = 'date',
         forecast_len: int = 5,
         horizon: int = 42,
         graph_width: int = 200,
         skip: int or None = 5,  # rows kept for pure testing
         load_pure_test: bool = False,
-        **kwargs
     ) -> None:
-        if not load_pure_test:
-            self.data_base: pd.DataFrame = pd.read_csv(db, **kwargs)\
-                .iloc[skip:]
-        else:
-            self.data_base: pd.DataFrame = pd.read_csv(db, **kwargs)\
-                .iloc[:(forecast_len+horizon+1)]
-        self.data_base[date_col] = pd.to_datetime(self.data_base[date_col])
-        self.data_base.sort_values(date_col)
-        self.data_base.drop(columns=['date'], inplace=True)
+        self.db_loc = db
+        self._date_col = date_col
+        self._skip = skip
+        self.load_test = load_pure_test
         self._forecast_len = forecast_len
         self._horizon = horizon
         self._graph_width = graph_width
-        self.build_data()
+        self.data_set = []
+        self.data_keys = []
+        self.data_base = pd.DataFrame()
+        self.shape = (0)
+        if auto_fill_set:
+            self.build_data()
 
     @property
     def horizon(self):
@@ -42,14 +42,43 @@ class DataSet():
     def graph_width(self):
         return self._graph_width
 
+    def load_from_db(self, from_, to):
+        if not self.load_test:
+            self.data_base: pd.DataFrame = pd.read_csv(self.db_loc)\
+                .iloc[self._skip:]
+        else:
+            self.data_base: pd.DataFrame = pd.read_csv(self.db_loc)\
+                .iloc[:(self.forecast_len+self.horizon+1)]
+        self.data_base[self._date_col] = pd.to_datetime(
+            self.data_base[self._date_col])
+        self.data_base.sort_values(self._date_col)
+        self.data_base.drop(columns=['date'], inplace=True)
+        if not self.load_test:
+            try:
+                self.data_base.iloc[from_:to]
+            except Exception:
+                return False
+        return True
+
+    def generate(self, from_: int, to: int):
+        del self.data_set
+        del self.data_keys
+        del self.data_base
+        if not self.load_from_db(from_, to):
+            return False
+        self.build_data()
+        return True
+
     def build_data(self):
         data_set = []
         data_keys = []
-        # total_len = len(self.data_base.columns)
         removed = 0
-        for n_eq, col in enumerate(self.data_base):
-            serries_to_array = np.array(self.data_base[col])
-            # print(f'Processing equity {n_eq} for {total_len} in total!')
+        for col_i in range(len(self.data_base)):
+            serries_to_array = np.array(
+                self.data_base[self.data_base.columns[col_i]]
+            )
+            if col_i == self.total_equities:
+                break
             for i in range(len(serries_to_array)):
                 start_position = i*self.forecast_len
                 end_position = start_position+self.forecast_len+self.horizon+1
@@ -63,10 +92,9 @@ class DataSet():
                     continue
                 data_set.append(graph_category_mix[0])
                 data_keys.append(graph_category_mix[1])
-            # print('Finished!')
-        print(removed)
         data_set = np.array(data_set)
         self.data_set = expand_dims(data_set, axis=-1)
+        self.shape = self.data_set.shape
         self.data_keys = np.array(data_keys)
 
     def make_graph(self, data: np.array):
