@@ -43,6 +43,7 @@ class DataSet():
         return self._graph_width
 
     def load_from_db(self, from_, to):
+        print(from_, to)
         if not self.load_test:
             self.data_base: pd.DataFrame = pd.read_csv(self.db_loc)\
                 .iloc[self._skip:]
@@ -55,7 +56,9 @@ class DataSet():
         self.data_base.drop(columns=['date'], inplace=True)
         if not self.load_test:
             try:
-                self.data_base.iloc[from_:to]
+                self.data_base = self.data_base[
+                    self.data_base.columns[from_:to]
+                ]
             except Exception:
                 return False
         return True
@@ -73,12 +76,10 @@ class DataSet():
         data_set = []
         data_keys = []
         removed = 0
-        for col_i in range(len(self.data_base)):
+        for col_i in range(len(self.data_base.columns)):
             serries_to_array = np.array(
                 self.data_base[self.data_base.columns[col_i]]
             )
-            if col_i == self.total_equities:
-                break
             for i in range(len(serries_to_array)):
                 start_position = i*self.forecast_len
                 end_position = start_position+self.forecast_len+self.horizon+1
