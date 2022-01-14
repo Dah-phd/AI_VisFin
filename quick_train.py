@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from sys import argv
+import os
 from modules.data_feed import DataSet
 # gpus = tf.config.experimental.list_physical_devices('GPU')
 # for gpu in gpus:
@@ -14,8 +15,8 @@ def main_by_generator():
     print(f'Training {MODEL_NAME}!')
     data_gen = DataSet('filtered_data_e.csv', False)
     n = 0
-    csv_logger = tf.keras.callbacks.CSVLogger(
-        'log.csv', separator=',', append=True)
+    csv_logger = \
+        tf.keras.callbacks.CSVLogger('log.csv', separator=',', append=True)
     while True:
         data_gen.generate(n*FEED_SPEED, n*FEED_SPEED+FEED_SPEED)
         if data_gen.shape[0] == 0:
@@ -37,6 +38,9 @@ def main_by_generator():
         print('door', door)
         n += 1
         print(f'{MODEL_NAME} SAVED!')
+    log_name = f'zlog_{MODEL_NAME}.csv'
+    os.rename('log.csv', log_name)
+    print(f'Training stats saved in file {log_name}')
 
 
 if __name__ == '__main__':
