@@ -38,7 +38,7 @@ def main_by_generator():
         print('door', door)
         n += 1
         print(f'{MODEL_NAME} SAVED!')
-    log_name = f'zlog_{MODEL_NAME}.csv'
+    log_name = f'zlog_{MODEL_NAME.split(".")[0]}.csv'
     os.rename('log.csv', log_name)
     print(f'Training stats saved in file {log_name}')
 
