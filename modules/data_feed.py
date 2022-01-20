@@ -42,8 +42,10 @@ class DataSet():
     def graph_width(self):
         return self._graph_width
 
+    def set_test_period(self, days: int):
+        self._skip = days
+
     def load_from_db(self, from_, to):
-        print(from_, to)
         if not self.load_test:
             self.data_base: pd.DataFrame = pd.read_csv(self.db_loc)\
                 .iloc[self._skip:]

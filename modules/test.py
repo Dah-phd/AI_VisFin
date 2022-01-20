@@ -7,14 +7,21 @@ import json
 
 
 class Tester:
-    def __init__(self, vis_fin_model: str,
-                 data_csv: str,
-                 skip: int = 0) -> None:
+    def __init__(self,
+                 vis_fin_model: str,
+                 data_csv: str = 'filtered_data_e.csv',
+                 skip: int = 0,
+                 test_days: int = 5,
+                 pure_test: bool = False) -> None:
         self.model = keras.models.load_model(vis_fin_model)
-        self.file_for_predictions = 'results_for_' + \
-            vis_fin_model[:-3]+'.csv'
+        self.model_name = vis_fin_model
+        self.pure_test = 'pure_' if pure_test else ''
+        self.file_for_predictions = vis_fin_model[:-3] + \
+            + self.pure_test + '_test_results.csv'
         # for five days
-        self.data = DataSet('filtered_data_e.csv', False, skip=skip)
+        if pure_test:
+            skip = test_days
+        self.data = DataSet(data_csv, pure_test, skip=skip)
         # results
         self.basic_stats = False
         self.predictions = []
@@ -56,7 +63,7 @@ class Tester:
                 'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})', }
 
     def store_results(self):
-        file_name = 'results.json'
+        file_name = f'{self.model_name}_{self.pure_test}results.json'
         with open(file_name, 'a+') as data_saver:
             data_saver.write('\n')
             data_saver.write(self.file_for_predictions[:-4])
