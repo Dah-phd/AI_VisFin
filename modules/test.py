@@ -9,17 +9,12 @@ import json
 class Tester:
     def __init__(self, vis_fin_model: str,
                  data_csv: str,
-                 days_to_test: int = 5,
-                 skip: int = 0,
-                 index_col: str or None = None) -> None:
+                 skip: int = 0) -> None:
         self.model = keras.models.load_model(vis_fin_model)
-        self.test_data = pd.read_csv(data_csv, index_col=index_col)
-        self.days_to_test = days_to_test
         self.file_for_predictions = 'results_for_' + \
-            data_csv[:-4]+f'_{5-skip}_new_days.csv'
+            vis_fin_model[:-3]+'.csv'
         # for five days
-        self.data = DataSet('filtered_data_e.csv', False, skip=0)
-        self.data.generate(0, 3000)
+        self.data = DataSet('filtered_data_e.csv', False, skip=skip)
         # results
         self.basic_stats = False
         self.predictions = []
@@ -28,22 +23,21 @@ class Tester:
 
     def test(self):
         if self.data.generate(0, 3000):
-            self.predictions.append(self.model.predict(
-                expand_dims(self.data.data_set, axis=-1)))
+            self.predictions.append(self.model.predict(self.data.data_set))
             self.expected.append(self.data.data_keys)
         pd.DataFrame({'Expected': self.expected, 'Results': self.predictions}).to_csv(
             self.file_for_predictions, index=False)
 
-    def _test_vals(self, i_gm):
+    def _test_vals(self):
         match = 0
         snd_match = 0
         direction_match = 0
-        for i in range(self.predictions[i_gm].shape[0]):
-            to_list = list(self.predictions[i_gm][i])
+        for i in range(self.predictions.shape[0]):
+            to_list = list(self.predictions[i])
             predict_i = to_list.index(max(to_list))
             snd_predict_i = self._second_largest(to_list, predict_i)
-            expect_i = self.expected[i_gm][i].index(
-                max(self.expected[i_gm][i]))
+            expect_i = self.expected[i].index(
+                max(self.expected[i]))
             if predict_i == expect_i:
                 match += 1
             elif (predict_i < 3 and expect_i < 3) or \
@@ -51,12 +45,12 @@ class Tester:
                 direction_match += 1
             if snd_predict_i == expect_i:
                 snd_match += 1
-        return {'Total tests': self.predictions[i_gm].shape[0],
+        return {'Total tests': self.predictions.shape[0],
                 'Exact match': match,
                 'Matched by second highest': snd_match,
                 'Match gain or loss': direction_match,
-                'Exact match rate': match/self.predictions[i_gm].shape[0],
-                'Gain/Loss match rate': (match+direction_match)/self.predictions[i_gm].shape[0],
+                'Exact match rate': match/self.predictions.shape[0],
+                'Gain/Loss match rate': (match+direction_match)/self.predictions.shape[0],
                 'Random match rate': self.coin_test[2],
                 'Random direction match rate': self.coin_test[3]/self.coin_test[1],
                 'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})', }
@@ -73,8 +67,7 @@ class Tester:
             return self.basic_stats
         else:
             self.coin_test = self._coin_flip_equivalent()
-            self.basic_stats = [self._test_vals(
-                i) for i in range(self.days_to_test)]
+            self.basic_stats = [self._test_vals()]
             self.store_results()
             return self.basic_stats
 
