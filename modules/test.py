@@ -1,5 +1,5 @@
 from tensorflow.python.keras.backend import exp
-from .data_feed import PrepareData
+from .data_feed import DataSet
 from tensorflow import keras, expand_dims
 import numpy as np
 import pandas as pd
@@ -18,31 +18,19 @@ class Tester:
         self.file_for_predictions = 'results_for_' + \
             data_csv[:-4]+f'_{5-skip}_new_days.csv'
         # for five days
-        self.graph_maker = PrepareData(
-            database=data_csv, date_col=index_col, skip=skip)
-        self.graph_maker.clean_db()
+        self.data = DataSet('filtered_data_e.csv', False, skip=0)
+        self.data.generate(0, 3000)
         # results
         self.basic_stats = False
         self.predictions = []
         self.graphs = []
         self.expected = []
-        self.st_devs = []
 
     def test(self):
-        for i in range(self.days_to_test):
-            graph = []
-            expected = []
-            st_devs = []
-            for key in self.graph_maker.keys:
-                grapth_tup = self.graph_maker.make_graph(key, start=i)
-                if grapth_tup[0].shape == (201, 43):
-                    graph.append(grapth_tup[0])
-                    expected.append(grapth_tup[1])
-                    st_devs.append(grapth_tup[2])
+        if self.data.generate(0, 3000):
             self.predictions.append(self.model.predict(
-                expand_dims(graph, axis=-1)))
-            self.expected.append(expected)
-            self.st_devs.append(st_devs)
+                expand_dims(self.data.data_set, axis=-1)))
+            self.expected.append(self.data.data_keys)
         pd.DataFrame({'Expected': self.expected, 'Results': self.predictions}).to_csv(
             self.file_for_predictions, index=False)
 

@@ -1,4 +1,3 @@
-from operator import index
 from tensorflow.keras import models
 import modules.test as test
 
