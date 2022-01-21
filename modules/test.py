@@ -21,7 +21,7 @@ class Tester:
         # for five days
         if pure_test:
             skip = test_days
-        self.data = DataSet(data_csv, pure_test, skip=skip)
+        self.data = DataSet(data_csv, load_pure_test=pure_test, skip=skip)
         # results
         self.basic_stats = False
         self.predictions = []
@@ -29,7 +29,7 @@ class Tester:
         self.expected = []
 
     def test(self):
-        if self.data.generate(0, 10):
+        if self.data.generate(0, 3000):
             self.predictions = self.model.predict(self.data.data_set)
             print(self.predictions.shape)
             self.expected = self.data.data_keys

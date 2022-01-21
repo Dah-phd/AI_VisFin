@@ -51,7 +51,7 @@ class DataSet():
                 .iloc[self._skip:]
         else:
             self.data_base: pd.DataFrame = pd.read_csv(self.db_loc)\
-                .iloc[:(self.forecast_len+self.horizon+1)]
+                .iloc[:(self.forecast_len+self.horizon+2)]
         self.data_base[self._date_col] = pd.to_datetime(
             self.data_base[self._date_col])
         self.data_base.sort_values(self._date_col)

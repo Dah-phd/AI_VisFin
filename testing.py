@@ -3,13 +3,13 @@ import modules.test as test
 
 
 def main(model: str):
-    # tester = test.Tester(model)
-    # tester.test()
-    # print(f'Model full test: {model}')
-    # for res in tester.overview():
-    #     print(res)
+    tester = test.Tester(model)
+    tester.test()
+    print(f'Model full test: {model}')
+    for res in tester.overview():
+        print(res)
 
-    tester = test.Tester(model, pure_test=False)
+    tester = test.Tester(model, pure_test=True)
     tester.test()
     print(f'Model pure test: {model}')
     for res in tester.overview():
