@@ -15,9 +15,9 @@ class Tester:
                  pure_test: bool = False) -> None:
         self.model = keras.models.load_model(vis_fin_model)
         self.model_name = vis_fin_model
-        self.pure_test = 'pure_' if pure_test else ''
-        self.file_for_predictions = vis_fin_model[:-3] + \
-            + self.pure_test + '_test_results.csv'
+        self.pure_test = '_pure' if pure_test else ''
+        self.file_for_predictions = \
+            f'{vis_fin_model[:-3]}{self.pure_test}_test_results.csv'
         # for five days
         if pure_test:
             skip = test_days
@@ -29,10 +29,11 @@ class Tester:
         self.expected = []
 
     def test(self):
-        if self.data.generate(0, 3000):
-            self.predictions.append(self.model.predict(self.data.data_set))
-            self.expected.append(self.data.data_keys)
-        pd.DataFrame({'Expected': self.expected, 'Results': self.predictions}).to_csv(
+        if self.data.generate(0, 10):
+            self.predictions = self.model.predict(self.data.data_set)
+            print(self.predictions.shape)
+            self.expected = self.data.data_keys
+        pd.DataFrame({'Expected': list(self.expected), 'Results': list(self.predictions)}).to_csv(
             self.file_for_predictions, index=False)
 
     def _test_vals(self):
@@ -43,7 +44,7 @@ class Tester:
             to_list = list(self.predictions[i])
             predict_i = to_list.index(max(to_list))
             snd_predict_i = self._second_largest(to_list, predict_i)
-            expect_i = self.expected[i].index(
+            expect_i = list(self.expected[i]).index(
                 max(self.expected[i]))
             if predict_i == expect_i:
                 match += 1
@@ -63,7 +64,7 @@ class Tester:
                 'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})', }
 
     def store_results(self):
-        file_name = f'{self.model_name}_{self.pure_test}results.json'
+        file_name = f'{self.model_name}{self.pure_test}_results.json'
         with open(file_name, 'a+') as data_saver:
             data_saver.write('\n')
             data_saver.write(self.file_for_predictions[:-4])
