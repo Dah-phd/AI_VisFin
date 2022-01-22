@@ -76,7 +76,7 @@ class Tester:
             return self.basic_stats
         else:
             self.coin_test = self._coin_flip_equivalent()
-            self.basic_stats = [self._test_vals()]
+            self.basic_stats = self._test_vals()
             self.store_results()
             return self.basic_stats
 
