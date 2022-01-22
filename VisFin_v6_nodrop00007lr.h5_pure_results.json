@@ -1,0 +1,12 @@
+{
+  "Model": "VisFin_v6_nodrop00007lr_pure",
+  "Total tests": 2549,
+  "Exact match": 524,
+  "Matched by second highest": 552,
+  "Match gain or loss": 305,
+  "Exact match rate": 0.20557081208316988,
+  "Gain/Loss match rate": 0.3252255786582974,
+  "Random match rate": 0.1539,
+  "Random direction match rate": 0.276,
+  "Random match test params": "Matches (1539)/N(10000)"
+}

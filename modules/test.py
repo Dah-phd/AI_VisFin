@@ -53,22 +53,23 @@ class Tester:
                 direction_match += 1
             if snd_predict_i == expect_i:
                 snd_match += 1
-        return {'Total tests': self.predictions.shape[0],
-                'Exact match': match,
-                'Matched by second highest': snd_match,
-                'Match gain or loss': direction_match,
-                'Exact match rate': match/self.predictions.shape[0],
-                'Gain/Loss match rate': (match+direction_match)/self.predictions.shape[0],
-                'Random match rate': self.coin_test[2],
-                'Random direction match rate': self.coin_test[3]/self.coin_test[1],
-                'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})', }
+        return {
+            'Model': self.model_name + self.pure_test,
+            'Total tests': self.predictions.shape[0],
+            'Exact match': match,
+            'Matched by second highest': snd_match,
+            'Match gain or loss': direction_match,
+            'Exact match rate': match/self.predictions.shape[0],
+            'Gain/Loss match rate': (match+direction_match)/self.predictions.shape[0],
+            'Random match rate': self.coin_test[2],
+            'Random direction match rate': self.coin_test[3]/self.coin_test[1],
+            'Random match test params': f'Matches ({self.coin_test[0]})/N({self.coin_test[1]})',
+        }
 
     def store_results(self):
         file_name = f'{self.model_name}{self.pure_test}_results.json'
         with open(file_name, 'a+') as data_saver:
-            data_saver.write('\n')
-            data_saver.write(self.file_for_predictions[:-4])
-            data_saver.write(json.dumps(self.basic_stats, indent=2))
+            data_saver.write(json.dumps(self.basic_stats))
 
     def overview(self):
         if self.basic_stats:

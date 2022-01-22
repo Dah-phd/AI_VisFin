@@ -18,5 +18,5 @@ def main(model: str):
 
 if __name__ == '__main__':
     main(
-        model='VisFin_v6_nodrop00007lr.h5',
+        model='VisFin_v6_nodrop00005lr.h5',
     )
