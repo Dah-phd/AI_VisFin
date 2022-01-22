@@ -8,10 +8,11 @@ from modules.data_feed import DataSet
 #     tf.config.experimental.set_memory_growth(gpu, True)
 MODEL_NAME = argv[1]
 FEED_SPEED = int(argv[2])
+VALIDATION_SPLIT = float(argv[3])
 MODEL = tf.keras.models.load_model(MODEL_NAME)
 
 
-def main_by_generator():
+def main_by_generator(validate=None):
     print(f'Training {MODEL_NAME}!')
     data_gen = DataSet('filtered_data_e.csv', False)
     n = 0
@@ -26,16 +27,27 @@ def main_by_generator():
             f'Training Session {n+1}, with data set of shape: {data_gen.shape}'
         )
         tf.keras.backend.clear_session()
-        door = MODEL.fit(
-            data_gen.data_set,
-            data_gen.data_keys,
-            batch_size=1000,
-            epochs=10,
-            verbose=1,
-            shuffle=True,
-            callbacks=[csv_logger])
+        if validate:
+            print(f'Using validation split: {validate}')
+            MODEL.fit(
+                data_gen.data_set,
+                data_gen.data_keys,
+                batch_size=1000,
+                epochs=10,
+                verbose=1,
+                validation_split=validate,
+                shuffle=True,
+                callbacks=[csv_logger])
+        else:
+            MODEL.fit(
+                data_gen.data_set,
+                data_gen.data_keys,
+                batch_size=1000,
+                epochs=10,
+                verbose=1,
+                shuffle=True,
+                callbacks=[csv_logger])
         MODEL.save(MODEL_NAME)
-        print('door', door)
         n += 1
         print(f'{MODEL_NAME} SAVED!')
     log_name = f'zlog_{MODEL_NAME.split(".")[0]}.csv'
@@ -44,4 +56,4 @@ def main_by_generator():
 
 
 if __name__ == '__main__':
-    main_by_generator()
+    main_by_generator(VALIDATION_SPLIT)
