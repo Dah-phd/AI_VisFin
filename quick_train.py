@@ -1,18 +1,22 @@
 import tensorflow as tf
-import numpy as np
 from sys import argv
 import os
 from modules.data_feed import DataSet
-# gpus = tf.config.experimental.list_physical_devices('GPU')
-# for gpu in gpus:
-#     tf.config.experimental.set_memory_growth(gpu, True)
+
+
 MODEL_NAME = argv[1]
-FEED_SPEED = int(argv[2])
-VALIDATION_SPLIT = float(argv[3])
+try:
+    FEED_SPEED = int(argv[2])
+except IndexError:
+    FEED_SPEED = 3000
+try:
+    VALIDATION_SPLIT = float(argv[3])
+except IndexError:
+    VALIDATION_SPLIT = None
 MODEL = tf.keras.models.load_model(MODEL_NAME)
 
 
-def main_by_generator(validate=None):
+def main_by_generator(validate: float or None):
     print(f'Training {MODEL_NAME}!')
     data_gen = DataSet('filtered_data_e.csv', False)
     n = 0
