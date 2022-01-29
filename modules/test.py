@@ -36,7 +36,7 @@ class Tester:
         pd.DataFrame({'Expected': list(self.expected), 'Results': list(self.predictions)}).to_csv(
             self.file_for_predictions, index=False)
 
-    def _test_vals(self):
+    def _test_vals(self) -> dict:
         match = 0
         snd_match = 0
         direction_match = 0
@@ -71,7 +71,7 @@ class Tester:
         with open(file_name, 'a+') as data_saver:
             data_saver.write(json.dumps(self.basic_stats))
 
-    def overview(self):
+    def overview(self) -> dict:
         if self.basic_stats:
             return self.basic_stats
         else:

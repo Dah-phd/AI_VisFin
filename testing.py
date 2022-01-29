@@ -6,17 +6,15 @@ def main(model: str):
     tester = test.Tester(model)
     tester.test()
     print(f'Model full test: {model}')
-    for res in tester.overview():
-        print(res)
+    print(tester.overview())
 
     tester = test.Tester(model, pure_test=True)
     tester.test()
     print(f'Model pure test: {model}')
-    for res in tester.overview():
-        print(res)
+    print(tester.overview())
 
 
 if __name__ == '__main__':
     main(
-        model='VisFin_v6_nodrop0003lr.h5',
+        model='VisFin_v6_20drop0003lr.h5',
     )

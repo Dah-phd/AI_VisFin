@@ -1,0 +1,1 @@
+{"Model": "VisFin_v6_10drop.h5_pure", "Total tests": 2549, "Exact match": 544, "Matched by second highest": 533, "Match gain or loss": 312, "Exact match rate": 0.21341702628481757, "Gain/Loss match rate": 0.33581796783052176, "Random match rate": 0.1551, "Random direction match rate": 0.2763, "Random match test params": "Matches (1551)/N(10000)"}
