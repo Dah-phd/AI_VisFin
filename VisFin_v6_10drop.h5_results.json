@@ -1,1 +1,12 @@
-{"Model": "VisFin_v6_10drop.h5", "Total tests": 99368, "Exact match": 35502, "Matched by second highest": 20025, "Match gain or loss": 12385, "Exact match rate": 0.357277996940665, "Gain/Loss match rate": 0.48191570726994604, "Random match rate": 0.1532, "Random direction match rate": 0.2767, "Random match test params": "Matches (1532)/N(10000)"}
+{
+    "Model": "VisFin_v6_10drop.h5",
+    "Total tests": 99368,
+    "Exact match": 35502,
+    "Matched by second highest": 20025,
+    "Match gain or loss": 12385,
+    "Exact match rate": 0.357277996940665,
+    "Gain/Loss match rate": 0.48191570726994604,
+    "Random match rate": 0.1532,
+    "Random direction match rate": 0.2767,
+    "Random match test params": "Matches (1532)/N(10000)"
+}
