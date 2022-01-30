@@ -3,10 +3,10 @@
     "Total tests": 99368,
     "Exact match": 34920,
     "Matched by second highest": 20650,
-    "Match gain or loss": 13116,
+    "Match gain or loss": 22902,
     "Exact match rate": 0.3514209805973754,
-    "Gain/Loss match rate": 0.48341518396264394,
-    "Random match rate": 0.153,
-    "Random direction match rate": 0.2864,
-    "Random match test params": "Matches (1530)/N(10000)"
+    "Gain/Loss match rate": 0.5818975927864101,
+    "Random match rate": 0.1567,
+    "Random direction match rate": 0.3467,
+    "Random match test params": "Matches (1567)/N(10000)"
 }

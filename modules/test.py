@@ -1,5 +1,8 @@
 from tensorflow.python.keras.backend import exp
-from .data_feed import DataSet
+try:
+    from .data_feed import DataSet
+except Exception:
+    pass
 from tensorflow import keras, expand_dims
 import numpy as np
 import pandas as pd
@@ -77,7 +80,7 @@ class Tester:
         if self.basic_stats:
             return self.basic_stats
         else:
-            self.coin_test = self._coin_flip_equivalent()
+            self.coin_test = coin_flip_equivalent()
             self.basic_stats = self._test_vals()
             self.store_results()
             return self.basic_stats
@@ -88,23 +91,29 @@ class Tester:
         ls[ls_max] = 0
         return ls.index(max(ls))
 
-    @ staticmethod
-    def _coin_flip_equivalent(n: int = 10000):
-        rand_ls_1 = np.random.randint(0, 8, n)
-        rand_ls_2 = np.random.randint(0, 8, n)
-        match = 0
-        direction = 0
-        for r1, r2 in zip(rand_ls_1, rand_ls_2):
-            if r1 == r2:
-                match += 1
-            elif r1 == 3 and r2 == 4:
-                match += 1
-            elif r2 == 3 and r1 == 4:
-                match += 1
-            if r1 < 3 and r2 < 3:
+
+def coin_flip_equivalent(n: int = 10000):
+    rand_ls_1 = np.random.randint(0, 8, n)
+    rand_ls_2 = np.random.randint(0, 8, n)
+    match = 0
+    direction = 0
+    for r1, r2 in zip(rand_ls_1, rand_ls_2):
+        if r1 == r2:
+            match += 1
+            if r1 == 3 or r1 == 4:
                 direction += 1
-            elif r1 == 3 and r2 == 3:
-                direction += 1
-            elif r1 > 4 and r2 > 4:
-                direction += 1
-        return (match, n, match/n, direction, direction/n)
+        elif r1 == 3 and r2 == 4:
+            match += 1
+            direction += 1
+        elif r2 == 3 and r1 == 4:
+            match += 1
+            direction += 1
+        if r1 < 3 and r2 < 3:
+            direction += 1
+        elif r1 > 4 and r2 > 4:
+            direction += 1
+    return (match, n, match/n, direction, direction/n)
+
+
+if __name__ == '__main__':
+    print(coin_flip_equivalent())
