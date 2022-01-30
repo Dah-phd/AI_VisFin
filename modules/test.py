@@ -51,6 +51,8 @@ class Tester:
             elif (predict_i < 3 and expect_i < 3) or \
                     (predict_i > 3 and expect_i > 3):
                 direction_match += 1
+            if predict_i == 3 and expect_i == 3:
+                direction_match += 1
             if snd_predict_i == expect_i:
                 snd_match += 1
         return {
@@ -100,6 +102,8 @@ class Tester:
             elif r2 == 3 and r1 == 4:
                 match += 1
             if r1 < 3 and r2 < 3:
+                direction += 1
+            elif r1 == 3 and r2 == 3:
                 direction += 1
             elif r1 > 4 and r2 > 4:
                 direction += 1
